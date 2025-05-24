@@ -9,7 +9,7 @@ def main():
     scrape_car_images() 
 
     print("\n☁️ Step 2: Uploading to S3...")
-    upload_directory("images", "myauto-car-images2")
+    upload_directory("images", "myauto-car-images1")
 
     print("\n✅ All done!")
 

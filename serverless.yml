@@ -1,0 +1,25 @@
+service: myauto-rekognition-service
+
+provider:
+  name: aws
+  runtime: python3.13
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - rekognition:DetectLabels
+        - dynamodb:PutItem
+        - s3:GetObject
+      Resource: "*"
+
+functions:
+  rekognitionAnalysisFunction:
+    handler: handler.lambda_handler
+    events:
+      - s3:
+          bucket: myauto-car-images1
+          event: s3:ObjectCreated:Put
+          rules:
+            - suffix: .jpg
+            - suffix: .png
+          existing: true

@@ -1,0 +1,742 @@
+{
+  "C:\\Users\\georg\\Desktop\\MyAuto\\serverless.yml": {
+    "versionFramework": "4.14.4",
+    "servicePath": "C:\\Users\\georg\\Desktop\\MyAuto\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "myauto-rekognition-service",
+      "provider": {
+        "name": "aws",
+        "runtime": "python3.13",
+        "region": "us-east-1",
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "rekognition:DetectLabels",
+              "dynamodb:PutItem",
+              "s3:GetObject"
+            ],
+            "Resource": "*"
+          }
+        ],
+        "stage": "dev",
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "RekognitionAnalysisFunctionLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/myauto-rekognition-service-dev-rekognitionAnalysisFunction"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "myauto-rekognition-service",
+                          "dev",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "rekognition:DetectLabels",
+                            "dynamodb:PutItem",
+                            "s3:GetObject"
+                          ],
+                          "Resource": "*"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "myauto-rekognition-service",
+                      "dev",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "RekognitionAnalysisFunctionLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-89a64f37-34cb",
+                  "S3Key": "serverless/myauto-rekognition-service/dev/1748104021868-2025-05-24T16:27:01.868Z/myauto-rekognition-service.zip"
+                },
+                "Handler": "handler.lambda_handler",
+                "Runtime": "python3.13",
+                "FunctionName": "myauto-rekognition-service-dev-rekognitionAnalysisFunction",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "RekognitionAnalysisFunctionLogGroup"
+              ]
+            },
+            "RekognitionAnalysisFunctionLambdaVersion2XwAI8684b3ZAoUsPbJbs7qD81fsLvu9dzRo8kmYrg": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "RekognitionAnalysisFunctionLambdaFunction"
+                },
+                "CodeSha256": "yeOJlUKRgwUj4e+H5H7nnWJMcjkFSTsX0P0o0V/Q50A="
+              }
+            },
+            "RekognitionAnalysisFunctionCustomS31": {
+              "Type": "Custom::S3",
+              "Version": "1.0",
+              "DependsOn": [
+                "RekognitionAnalysisFunctionLambdaFunction",
+                "CustomDashresourceDashexistingDashs3LambdaFunction"
+              ],
+              "Properties": {
+                "ServiceToken": "<REDACTED>",
+                "FunctionName": "myauto-rekognition-service-dev-rekognitionAnalysisFunction",
+                "BucketName": "myauto-car-images1",
+                "BucketConfigs": [
+                  {
+                    "Event": "s3:ObjectCreated:Put",
+                    "Rules": [
+                      {
+                        "Suffix": ".jpg"
+                      },
+                      {
+                        "Suffix": ".png"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "IamRoleCustomResourcesLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "dev",
+                          "myauto-rekognition-service",
+                          "custom-resources-lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Fn::Join": [
+                              ":",
+                              [
+                                "arn",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                "s3",
+                                "",
+                                "",
+                                "myauto-car-images1"
+                              ]
+                            ]
+                          },
+                          "Action": [
+                            "s3:PutBucketNotification",
+                            "s3:GetBucketNotification"
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Resource": {
+                            "Fn::Join": [
+                              ":",
+                              [
+                                "arn",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                "lambda",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                "function",
+                                "*"
+                              ]
+                            ]
+                          },
+                          "Action": [
+                            "lambda:AddPermission",
+                            "lambda:RemovePermission"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "CustomDashresourceDashexistingDashs3LambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-89a64f37-34cb",
+                  "S3Key": "serverless/myauto-rekognition-service/dev/1748104021868-2025-05-24T16:27:01.868Z/custom-resources.zip"
+                },
+                "FunctionName": "myauto-rekognition-service-dev-custom-resource-existing-s3",
+                "Handler": "s3/handler.handler",
+                "MemorySize": 1024,
+                "Runtime": "nodejs20.x",
+                "Timeout": 180,
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleCustomResourcesLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "IamRoleCustomResourcesLambdaExecution",
+                "CustomDashresourceDashexistingDashs3LogGroup"
+              ]
+            },
+            "CustomDashresourceDashexistingDashs3LogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/myauto-rekognition-service-dev-custom-resource-existing-s3"
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-us-east-1-89a64f37-34cb",
+              "Export": {
+                "Name": "sls-myauto-rekognition-service-dev-ServerlessDeploymentBucketName"
+              }
+            },
+            "RekognitionAnalysisFunctionLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "RekognitionAnalysisFunctionLambdaVersion2XwAI8684b3ZAoUsPbJbs7qD81fsLvu9dzRo8kmYrg"
+              },
+              "Export": {
+                "Name": "sls-myauto-rekognition-service-dev-RekognitionAnalysisFunctionLambdaFunctionQualifiedArn"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "rekognitionAnalysisFunction": {
+          "handler": "handler.lambda_handler",
+          "events": [
+            {
+              "s3": {
+                "bucket": "myauto-car-images1",
+                "event": "s3:ObjectCreated:Put",
+                "rules": [
+                  {
+                    "suffix": ".jpg"
+                  },
+                  {
+                    "suffix": ".png"
+                  }
+                ],
+                "existing": true
+              }
+            }
+          ],
+          "name": "myauto-rekognition-service-dev-rekognitionAnalysisFunction",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "python3.13",
+          "vpc": {},
+          "versionLogicalId": "RekognitionAnalysisFunctionLambdaVersion2XwAI8684b3ZAoUsPbJbs7qD81fsLvu9dzRo8kmYrg"
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.13",
+      "region": "us-east-1",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "rekognition:DetectLabels",
+            "dynamodb:PutItem",
+            "s3:GetObject"
+          ],
+          "Resource": "*"
+        }
+      ],
+      "stage": "dev",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "RekognitionAnalysisFunctionLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/myauto-rekognition-service-dev-rekognitionAnalysisFunction"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "myauto-rekognition-service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "rekognition:DetectLabels",
+                          "dynamodb:PutItem",
+                          "s3:GetObject"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "myauto-rekognition-service",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "RekognitionAnalysisFunctionLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-89a64f37-34cb",
+                "S3Key": "serverless/myauto-rekognition-service/dev/1748104021868-2025-05-24T16:27:01.868Z/myauto-rekognition-service.zip"
+              },
+              "Handler": "handler.lambda_handler",
+              "Runtime": "python3.13",
+              "FunctionName": "myauto-rekognition-service-dev-rekognitionAnalysisFunction",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "RekognitionAnalysisFunctionLogGroup"
+            ]
+          },
+          "RekognitionAnalysisFunctionLambdaVersion2XwAI8684b3ZAoUsPbJbs7qD81fsLvu9dzRo8kmYrg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "RekognitionAnalysisFunctionLambdaFunction"
+              },
+              "CodeSha256": "yeOJlUKRgwUj4e+H5H7nnWJMcjkFSTsX0P0o0V/Q50A="
+            }
+          },
+          "RekognitionAnalysisFunctionCustomS31": {
+            "Type": "Custom::S3",
+            "Version": "1.0",
+            "DependsOn": [
+              "RekognitionAnalysisFunctionLambdaFunction",
+              "CustomDashresourceDashexistingDashs3LambdaFunction"
+            ],
+            "Properties": {
+              "ServiceToken": "<REDACTED>",
+              "FunctionName": "myauto-rekognition-service-dev-rekognitionAnalysisFunction",
+              "BucketName": "myauto-car-images1",
+              "BucketConfigs": [
+                {
+                  "Event": "s3:ObjectCreated:Put",
+                  "Rules": [
+                    {
+                      "Suffix": ".jpg"
+                    },
+                    {
+                      "Suffix": ".png"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "IamRoleCustomResourcesLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "myauto-rekognition-service",
+                        "custom-resources-lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/myauto-rekognition-service-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Resource": {
+                          "Fn::Join": [
+                            ":",
+                            [
+                              "arn",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "s3",
+                              "",
+                              "",
+                              "myauto-car-images1"
+                            ]
+                          ]
+                        },
+                        "Action": [
+                          "s3:PutBucketNotification",
+                          "s3:GetBucketNotification"
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Resource": {
+                          "Fn::Join": [
+                            ":",
+                            [
+                              "arn",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "lambda",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              "function",
+                              "*"
+                            ]
+                          ]
+                        },
+                        "Action": [
+                          "lambda:AddPermission",
+                          "lambda:RemovePermission"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "CustomDashresourceDashexistingDashs3LambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-89a64f37-34cb",
+                "S3Key": "serverless/myauto-rekognition-service/dev/1748104021868-2025-05-24T16:27:01.868Z/custom-resources.zip"
+              },
+              "FunctionName": "myauto-rekognition-service-dev-custom-resource-existing-s3",
+              "Handler": "s3/handler.handler",
+              "MemorySize": 1024,
+              "Runtime": "nodejs20.x",
+              "Timeout": 180,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleCustomResourcesLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "IamRoleCustomResourcesLambdaExecution",
+              "CustomDashresourceDashexistingDashs3LogGroup"
+            ]
+          },
+          "CustomDashresourceDashexistingDashs3LogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/myauto-rekognition-service-dev-custom-resource-existing-s3"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-us-east-1-89a64f37-34cb",
+            "Export": {
+              "Name": "sls-myauto-rekognition-service-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "RekognitionAnalysisFunctionLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "RekognitionAnalysisFunctionLambdaVersion2XwAI8684b3ZAoUsPbJbs7qD81fsLvu9dzRo8kmYrg"
+            },
+            "Export": {
+              "Name": "sls-myauto-rekognition-service-dev-RekognitionAnalysisFunctionLambdaFunctionQualifiedArn"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "An error occurred: IamRoleCustomResourcesLambdaExecution - Resource handler returned message: \"Encountered a permissions error performing a tagging operation, please add required tag permissions. See https://repost.aws/knowledge-center/cloudformation-tagging-permission-error for how to resolve. Resource handler returned message: \"User: arn:aws:sts::822879580508:assumed-role/voclabs/user2176413=giorgi.nadirashvili.1@btu.edu.ge is not authorized to perform: iam:CreateRole on resource: arn:aws:iam::822879580508:role/myauto-rekognition-servic-IamRoleCustomResourcesLam-DqbzCzI2DAOW because no identity-based policy allows the iam:CreateRole action (Service: Iam, Status Code: 403, Request ID: c469efa1-8601-42ee-9dff-c050e02b9eb1) (SDK Attempt Count: 1)\"\" (RequestToken: 770d7c27-95c6-3b3b-cc1b-6f01b6382544, HandlerErrorCode: UnauthorizedTaggingOperation).",
+      "stack": "ServerlessError2: An error occurred: IamRoleCustomResourcesLambdaExecution - Resource handler returned message: \"Encountered a permissions error performing a tagging operation, please add required tag permissions. See https://repost.aws/knowledge-center/cloudformation-tagging-permission-error for how to resolve. Resource handler returned message: \"User: arn:aws:sts::822879580508:assumed-role/voclabs/user2176413=giorgi.nadirashvili.1@btu.edu.ge is not authorized to perform: iam:CreateRole on resource: arn:aws:iam::822879580508:role/myauto-rekognition-servic-IamRoleCustomResourcesLam-DqbzCzI2DAOW because no identity-based policy allows the iam:CreateRole action (Service: Iam, Status Code: 403, Request ID: c469efa1-8601-42ee-9dff-c050e02b9eb1) (SDK Attempt Count: 1)\"\" (RequestToken: 770d7c27-95c6-3b3b-cc1b-6f01b6382544, HandlerErrorCode: UnauthorizedTaggingOperation).\n    at file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1039:828\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async AwsDeploy.createFallback (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1039:23478)\n    at async aws:deploy:deploy:updateStack (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1050:7906)\n    at async PluginManager.runHooks (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1241:9549)\n    at async PluginManager.invoke (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1241:10318)\n    at async PluginManager.spawn (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1241:10677)\n    at async PluginManager.runHooks (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1241:9549)\n    at async PluginManager.invoke (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1241:10318)\n    at async PluginManager.run (file:///C:/Users/georg/.serverless/releases/4.14.4/package/dist/sf-core.js:1241:11047)",
+      "code": "AWS_CLOUD_FORMATION_CREATE_STACK_INTERNAL_INSUFFICIENT_PERMISSIONS"
+    },
+    "serviceRawFile": "service: myauto-rekognition-service\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: python3.13\r\n  region: us-east-1\r\n  iamRoleStatements:\r\n    - Effect: Allow\r\n      Action:\r\n        - rekognition:DetectLabels\r\n        - dynamodb:PutItem\r\n        - s3:GetObject\r\n      Resource: \"*\"\r\n\r\nfunctions:\r\n  rekognitionAnalysisFunction:\r\n    handler: handler.lambda_handler\r\n    events:\r\n      - s3:\r\n          bucket: myauto-car-images1\r\n          event: s3:ObjectCreated:Put\r\n          rules:\r\n            - suffix: .jpg\r\n            - suffix: .png\r\n          existing: true\r\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "orgId": "2ac210e2-0298-45ea-a709-35aeb6927284",
+    "orgName": "19732000",
+    "userId": "t4Rx95JjdFfYHmlcgT",
+    "userName": "19732000",
+    "serviceProviderAwsAccountId": "822879580508",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}
